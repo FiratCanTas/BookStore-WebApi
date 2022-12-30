@@ -31,11 +31,23 @@ namespace BookStore.Controllers
 
         [HttpGet("{id}")] //route-path den id değerini aldık ve Query den değer almaya göre daha dorğu bir yaklaşımdır.
 
-        public Book GetBookById(int id)
+        public IActionResult GetBookById(int id)
         {
-            var book = _dbContext.Books.Where(x=>x.Id == id).FirstOrDefault();
+            BookDetailViewModel result;
+            try
+            {
+                GetBookDetailQuery query = new GetBookDetailQuery(_dbContext);
+                query.BookId = id;
+                result = query.Handle();
+            }
+            catch (Exception ex)
+            {
 
-            return book;
+                return BadRequest(ex.Message);
+            }
+      
+            return Ok(result);
+          
         }
 
         //[HttpGet] //Bir source yani controller içerisinde iki tane aynı şekilde Get işlemi olursa Conflict hatası yer dikkat et!!
@@ -68,19 +80,23 @@ namespace BookStore.Controllers
 
         [HttpPut("{id}")]
 
-        public IActionResult UpdateBook(int id, [FromBody] Book updatedBook) //Body den kitap bilgileri girilecek  ve route dan id ile güncellenecek kitap bilgisi geliyor olacak
+        public IActionResult UpdateBook(int id, [FromBody] UpdateBookModel updatedBook) //Body den kitap bilgileri girilecek  ve route dan id ile güncellenecek kitap bilgisi geliyor olacak
         {
-            var book = _dbContext.Books.FirstOrDefault(x=> x.Id == id);
+            try
+            {
+                UpdateBookCommand command = new UpdateBookCommand(_dbContext);
+                command.BookId = id;
+                command.Model = updatedBook;
+                command.Handle();
+            }
+            catch (Exception ex)
+            {
 
-            if (book == null)
-                return BadRequest();
-
-            book.GenreId= updatedBook.GenreId != default ? updatedBook.GenreId : book.GenreId; //int için default değer güncelleme yapılmadıysa 0 olarak kalır
-            book.PageCount = updatedBook.PageCount != default ? updatedBook.PageCount : book.PageCount;
-            book.PublishedDate = updatedBook.PublishedDate != default ? updatedBook.PublishedDate : book.PublishedDate;
-            book.Title = updatedBook.Title != default ? updatedBook.Title : book.Title; //default string değeri empty ya da null gelir
-
+                return BadRequest(ex.Message);
+            }
+          
             _dbContext.SaveChanges();
+
             return Ok();
 
             
@@ -89,13 +105,18 @@ namespace BookStore.Controllers
         [HttpDelete("{id}")]
         public IActionResult DeleteBook(int id)
         {
-            var book = _dbContext.Books.FirstOrDefault(x => x.Id == id);
+            try
+            {
+                DeleteBookCommand command = new DeleteBookCommand(_dbContext);
+                command.BookId = id;
+                command.Handle();
+            }
+            catch (Exception ex)
+            {
 
-            if (book is null)
-                return BadRequest();
-
-            _dbContext.Books.Remove(book);
-            _dbContext.SaveChanges();
+                return BadRequest(ex.Message);
+            }
+         
             return Ok();
 
         }
