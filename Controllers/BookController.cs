@@ -1,4 +1,5 @@
-﻿using BookStore.BookOperations;
+﻿using AutoMapper;
+using BookStore.BookOperations;
 using BookStore.DbOperations;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -15,16 +16,18 @@ namespace BookStore.Controllers
 
         private readonly BookStoreDbContext _dbContext; //readonly yaptım uygulama içerisinden değiştirilemesin sadece Ctor içinde set edilsin diye. private sadece burada kullanacağım için.
 
-        public BookController(BookStoreDbContext dbContext)
+        private readonly IMapper _mapper;
+        public BookController(BookStoreDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;  //ctor da inject edilen instance ı atadım
+            _mapper = mapper;
         }
 
 
         [HttpGet]
         public IActionResult GetAllBooks()
         {
-            GetBooksQuery query = new GetBooksQuery(_dbContext);
+            GetBooksQuery query = new GetBooksQuery(_dbContext,_mapper);
             var result = query.Handle();
             return Ok(result);
         }
@@ -36,7 +39,7 @@ namespace BookStore.Controllers
             BookDetailViewModel result;
             try
             {
-                GetBookDetailQuery query = new GetBookDetailQuery(_dbContext);
+                GetBookDetailQuery query = new GetBookDetailQuery(_dbContext,_mapper);
                 query.BookId = id;
                 result = query.Handle();
             }
@@ -62,7 +65,7 @@ namespace BookStore.Controllers
         [HttpPost]
         public IActionResult AddBook([FromBody] CreateBookModel newBook) //post ta dönüş tipi void değil IActionResult yaptım cunku metot içinde validasyon ile hata veya ok mesajı döndürdüm. 
         {
-            CreateBookCommand command = new CreateBookCommand(_dbContext);
+            CreateBookCommand command = new CreateBookCommand(_dbContext,_mapper);
 
             try
             {
