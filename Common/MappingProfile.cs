@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
-using BookStore.BookOperations;
+using BookStore.BookOperations.CreateBook;
+using BookStore.BookOperations.GetBookDetail;
+using BookStore.BookOperations.GetBooks;
 using System.Collections.Generic;
 
 namespace BookStore.Common

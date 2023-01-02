@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BookStore.BookOperations
+namespace BookStore.BookOperations.GetBooks
 {
     public class GetBooksQuery
     {
@@ -17,7 +17,7 @@ namespace BookStore.BookOperations
             _mapper = mapper;
         }
 
-        public List<BooksViewModel> Handle() 
+        public List<BooksViewModel> Handle()
         {
             var bookList = _dbContext.Books.OrderBy(x => x.Id).ToList();
             List<BooksViewModel> vm = _mapper.Map<List<BooksViewModel>>(bookList); /*new List<BooksViewModel>();*/

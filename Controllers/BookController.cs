@@ -1,11 +1,18 @@
 ﻿using AutoMapper;
-using BookStore.BookOperations;
+using BookStore.BookOperations.CreateBook;
+using BookStore.BookOperations.DeleteBook;
+using BookStore.BookOperations.GetBookDetail;
+using BookStore.BookOperations.GetBooks;
+using BookStore.BookOperations.UpdateBook;
 using BookStore.DbOperations;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace BookStore.Controllers
 {
@@ -41,6 +48,9 @@ namespace BookStore.Controllers
             {
                 GetBookDetailQuery query = new GetBookDetailQuery(_dbContext,_mapper);
                 query.BookId = id;
+                GetBookDetailQueryValidator validator = new GetBookDetailQueryValidator();
+                validator.ValidateAndThrow(query);
+               
                 result = query.Handle();
             }
             catch (Exception ex)
@@ -69,7 +79,21 @@ namespace BookStore.Controllers
 
             try
             {
-                command.Model = newBook;
+                command.Model = newBook; 
+                //Model maplendikten sonra validasyonu yapmamız lazım
+                CreateBookCommandValidator validator = new CreateBookCommandValidator();
+                /* ValidationResult result  = validator.Validate(command);*/ //--> sonuçları görmek istediğimiz için değişkene attık
+
+                //if (!result.IsValid) //bütün kurallardan true geldiyse is valid döner
+                //{
+                //    foreach (var item in result.Errors)
+                //    {
+                //        Console.WriteLine($"Özellik : {item.PropertyName} - Hata Mesajı : {item.ErrorMessage}");
+                //    }
+                //}
+
+                validator.ValidateAndThrow(command); //Hatayı yakala ve fırlat, fırlatılan bu hata catchteki exception tarafından yakalanıp yazdırılacak
+
                 command.Handle();
             }
             catch (Exception ex)
@@ -90,6 +114,8 @@ namespace BookStore.Controllers
                 UpdateBookCommand command = new UpdateBookCommand(_dbContext);
                 command.BookId = id;
                 command.Model = updatedBook;
+                UpdateBookCommandValidator validator = new UpdateBookCommandValidator();
+                validator.ValidateAndThrow(command);
                 command.Handle();
             }
             catch (Exception ex)
@@ -112,6 +138,9 @@ namespace BookStore.Controllers
             {
                 DeleteBookCommand command = new DeleteBookCommand(_dbContext);
                 command.BookId = id;
+                DeleteBookCommandValidator validator = new DeleteBookCommandValidator();
+                validator.ValidateAndThrow(command);
+
                 command.Handle();
             }
             catch (Exception ex)

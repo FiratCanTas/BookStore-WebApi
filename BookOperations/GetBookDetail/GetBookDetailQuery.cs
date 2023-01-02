@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Linq;
 
-namespace BookStore.BookOperations
+namespace BookStore.BookOperations.GetBookDetail
 {
     public class GetBookDetailQuery
     {

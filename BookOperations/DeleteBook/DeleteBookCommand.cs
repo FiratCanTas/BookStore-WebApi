@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace BookStore.BookOperations
+namespace BookStore.BookOperations.DeleteBook
 {
     public class DeleteBookCommand
     {
@@ -25,5 +25,5 @@ namespace BookStore.BookOperations
         }
     }
 
-    
+
 }

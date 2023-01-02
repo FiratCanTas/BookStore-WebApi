@@ -3,11 +3,11 @@ using BookStore.DbOperations;
 using System;
 using System.Linq;
 
-namespace BookStore.BookOperations
+namespace BookStore.BookOperations.CreateBook
 {
     public class CreateBookCommand
     {
-        public  CreateBookModel Model { get; set; }
+        public CreateBookModel Model { get; set; }
 
         private readonly BookStoreDbContext _dbContext;
         private readonly IMapper _mapper;
@@ -34,7 +34,7 @@ namespace BookStore.BookOperations
 
             _dbContext.Books.Add(book);
             _dbContext.SaveChanges();
-           
+
         }
     }
 
